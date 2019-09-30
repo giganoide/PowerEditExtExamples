@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "010_Empty", "010_Empty\010_Empty.csproj", "{38174699-7D2D-4CB6-AD12-85AE89053304}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{247E69E8-F700-4354-A048-841C8B517A9B}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\Atys.PowerEDIT.BaseLibrary.dll = Dependencies\Atys.PowerEDIT.BaseLibrary.dll
+		Dependencies\Atys.PowerEDIT.BaseLibrary.xml = Dependencies\Atys.PowerEDIT.BaseLibrary.xml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{38174699-7D2D-4CB6-AD12-85AE89053304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38174699-7D2D-4CB6-AD12-85AE89053304}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38174699-7D2D-4CB6-AD12-85AE89053304}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38174699-7D2D-4CB6-AD12-85AE89053304}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58AC97C6-72C4-4566-A5A6-BFE1D1FD8D81}
+	EndGlobalSection
+EndGlobal
