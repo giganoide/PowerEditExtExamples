@@ -20,13 +20,16 @@ namespace TeamSystem.Customizations
         #region const
 
         //caption barre
-        private const string MYBARCAPTION = "My Addin Bar";
+        private const string DOCUMENTMANAGEMENTCAPTION = "Document management Bar";
 
         //caption gruppi
-        private const string MYGROUP1CAPTION = "Document management";
+        private const string DOCUMENTMANAGEMENTGROUPCAPTION = "Document management group";
 
         //caption pulsanti
-        private const string MYCOMMAND1BUTTONCAPTION = "Replace";
+        private const string REPLACEBUTTONCAPTION = "Replace";
+        private const string NEWDOCUMENTBUTTONCAPTION = "New Doc";
+        private const string ADDDATABUTTONCAPTION = "Add Data";
+        private const string MOVEBUTTONCAPTION = "Move";
 
         #endregion
 
@@ -37,13 +40,15 @@ namespace TeamSystem.Customizations
         private IExtensionUIManager m_UIManager = null;
         private bool _IsUIManagerConnected = false;
 
-        private UIMenuBarInfo _MyAdvancedBar = null;
+        private UIMenuBarInfo _DocumentManagementBar = null;
 
-        private UIMenuBarGroupInfo _MyGroup1 = null;
-        private UIMenuBarGroupInfo _MyHomeGroup = null;
+        private UIMenuBarGroupInfo _DocumentManagementGroup = null;
+        
 
-        private UIMenuBarItemInfo _MyCommandButton1 = null;
-        private UIMenuBarItemInfo _MyCommandButton2 = null;
+        private UIMenuBarItemInfo _ReplaceButton = null;
+        private UIMenuBarItemInfo _NewDocumentButton = null;
+        private UIMenuBarItemInfo _MoveButton = null;
+        private UIMenuBarItemInfo _AddDataButton = null;
 
         #endregion
 
@@ -68,28 +73,37 @@ namespace TeamSystem.Customizations
             //eventuale controllo su stato non running
 
             this._AddinState = ExtensionState.Initailizing;
-
             this._PowerEDITApp = pweApp;
-
-            //inizializzazioni varie...
-
-            //UI
-
-            //prendo il riferimento alla barra principale (Power)
             
-            //aggiungo una barra per comandi speciali
-            this._MyAdvancedBar = new UIMenuBarInfo(this, MYBARCAPTION, AddinMenuBarTarget.AddinCustomBar);
-            this.m_UIManager.CreateMenuBar(this._MyAdvancedBar);
+            this._DocumentManagementBar = new UIMenuBarInfo(this, DOCUMENTMANAGEMENTCAPTION, AddinMenuBarTarget.AddinCustomBar);
+            this.m_UIManager.CreateMenuBar(this._DocumentManagementBar);
 
-            //
-            this._MyGroup1 = new UIMenuBarGroupInfo(this, this._MyAdvancedBar, MYGROUP1CAPTION);
-            this.m_UIManager.AppendGroupToMenuBar(this._MyAdvancedBar, this._MyGroup1);
+            this._DocumentManagementGroup = new UIMenuBarGroupInfo(this, this._DocumentManagementBar, DOCUMENTMANAGEMENTGROUPCAPTION);
+            this.m_UIManager.AppendGroupToMenuBar(this._DocumentManagementBar, this._DocumentManagementGroup);
 
-            this._MyCommandButton1 = new UIMenuBarItemInfo(this, this._MyGroup1,
-                MYCOMMAND1BUTTONCAPTION, AddinMenuItemType.Button,
+            // New document button
+            this._NewDocumentButton = new UIMenuBarItemInfo(this, this._DocumentManagementGroup,
+                NEWDOCUMENTBUTTONCAPTION, AddinMenuItemType.Button,
+                Properties.Resources.TS_LogoSmall_32);
+            this.m_UIManager.AppendItemToMenuGroup(this._DocumentManagementGroup, this._NewDocumentButton);
+
+            // Move button
+            this._MoveButton = new UIMenuBarItemInfo(this, this._DocumentManagementGroup,
+                MOVEBUTTONCAPTION, AddinMenuItemType.Button,
+                Properties.Resources.TS_LogoSmall_32);
+            this.m_UIManager.AppendItemToMenuGroup(this._DocumentManagementGroup, this._MoveButton);
+
+            // Replace button
+            this._ReplaceButton = new UIMenuBarItemInfo(this, this._DocumentManagementGroup,
+                REPLACEBUTTONCAPTION, AddinMenuItemType.Button,
                 Properties.Resources.ReplaceIcon);
-            this.m_UIManager.AppendItemToMenuGroup(this._MyGroup1, this._MyCommandButton1);
-
+            this.m_UIManager.AppendItemToMenuGroup(this._DocumentManagementGroup, this._ReplaceButton);
+            
+            // Add button
+            this._AddDataButton = new UIMenuBarItemInfo(this, this._DocumentManagementGroup,
+                ADDDATABUTTONCAPTION, AddinMenuItemType.Button,
+                Properties.Resources.TS_LogoSmall_32);
+            this.m_UIManager.AppendItemToMenuGroup(this._DocumentManagementGroup, this._AddDataButton);
 
             this._AddinState = ExtensionState.Initialized;
         }
@@ -139,22 +153,27 @@ namespace TeamSystem.Customizations
             {
                 pweDoc.TextChanging -= this.PweDoc_TextChanging;
             }
-            catch (Exception )
+            catch (Exception)
             {
+                // ignored
             }
         }
 
         private void PweDoc_TextChanging(object sender, TextChangeCancelEventArgs e)
         {
-            if (e.LinesDeleted > 0 &&  e.DeletedText.Contains("gigio"))
+            if (e.LinesDeleted > 0 &&  e.DeletedText.Contains("non cancellare"))
             {
-               
                 e.Cancel = true;
             }
         }
 
         private void _PowerEDITApp_ActiveDocumentChanged(object sender, ActiveDocumentChangedEventArgs e)
         {
+            if (e.PreviousDoc is IPWEDoc previousPweDoc)
+                previousPweDoc.TextChanging -= this.PweDoc_TextChanging;
+            
+            if (e.ActiveDoc is IPWEDoc activePweDoc)
+                activePweDoc.TextChanging += this.PweDoc_TextChanging;
             //aggancio e sgancio da eventi documento attivo in continuo
             //con stesso codice sopra
         }
@@ -166,12 +185,12 @@ namespace TeamSystem.Customizations
             this._AddinState = ExtensionState.Closing;
 
             //UI
-            if (this._MyGroup1 != null)
-                this.m_UIManager.DetachGroupFromMenuBar(this._MyGroup1);
+            if (this._DocumentManagementGroup != null)
+                this.m_UIManager.DetachGroupFromMenuBar(this._DocumentManagementGroup);
 
             //this.m_UIManager.DetachGroupFromMenuBar(this._MesGroup);
 
-            this.m_UIManager.DestroyMenuBar(this._MyAdvancedBar);
+            this.m_UIManager.DestroyMenuBar(this._DocumentManagementBar);
             //shut down code here...
 
             this._AddinState = ExtensionState.Closed;
@@ -189,81 +208,92 @@ namespace TeamSystem.Customizations
         {
             Debug.Assert(menuItem != null);
 
-            //var x = this._PowerEDITApp.OpenPWEDoc(@"");
+            var activeDoc = this._PowerEDITApp.GetPWEActiveDoc();
+            
+            if (menuItem.Caption == NEWDOCUMENTBUTTONCAPTION)
+                NewDocumentAction();
+            else if (menuItem.Caption == MOVEBUTTONCAPTION)
+                MoveAction(activeDoc);
+            else if (menuItem.Caption == REPLACEBUTTONCAPTION)
+                ReplaceAction(activeDoc);
+            else if (menuItem.Caption == ADDDATABUTTONCAPTION)
+                AddDataAction(activeDoc);
+        }
 
-            if (menuItem.Caption == MYCOMMAND1BUTTONCAPTION)
-            {
-
-                var activeDoc = this._PowerEDITApp.GetPWEActiveDoc();
-                if (activeDoc == null)
-                {
-                    MessageBox.Show("Documento attivo non è di tipo testo");
-                    return;
-                }
-
-                var profileName = this._PowerEDITApp.GetActiveProfileName();
-                if (profileName != "PWEBase")
-                    return;
-
-                const string stringToReplace = "S";
-                const string replaceWith = "Raggio";
-
-                //ricerca e sostituzione testo MODO 1 (Manuale)
-                var countDoc = activeDoc.LineCount;
-                for (var i = 1; i <= countDoc; i++)
-                {
-                    var line = activeDoc.GetLine(i);
-
-
-                    var newLine = line.Text.Replace(stringToReplace, replaceWith);
-                    line.ReplaceAllText(newLine);
-                }
-
-                //ricerca e sostituzione testo MODO 2 (API) - solo find
-
-                var findResults = activeDoc.FindText(stringToReplace, SearchAction.SearchAll, SearchScope.All,
-                                                     SearchType.Standard, SearchCasing.Any,
-                                                     SearchWord.AnyText, string.Empty, true,
-                                                     UiInteraction.None);
-
-                //ricerca e sostituzione testo MODO 3 (API) - replace diretto
-                var replaceResults = activeDoc.ReplaceText(stringToReplace, replaceWith,
-                                                           SearchAction.SearchAll, SearchScope.All,
-                                                           SearchType.Standard, SearchCasing.Any,
-                                                           SearchWord.AnyText, string.Empty,
-                                                           UiInteraction.None);
-
-                //muoversi tra le righe
-                activeDoc.MoveCursor(MoveCursorTarget.ToDocumentBegin);
-                activeDoc.MoveCursor(MoveCursorTarget.PageDown);
-                activeDoc.MoveCursor(MoveCursorTarget.PageUp);
-                
-                //activeDoc.GetCurrentLine()
-                 activeDoc.SetCursorPosition(1, 1);
-                for (var i = 1; i <= countDoc; i++)
-                {
-                    activeDoc.SetCursorPosition(i, 1);
-                    var line = activeDoc.GetLine(i);
-                    //...
-
-                    activeDoc.SetSelection(line.TextRange);
-
-                }
-
-                //aggiunta dati
-                activeDoc.MoveCursor(MoveCursorTarget.ToDocumentEnd);
-                activeDoc.AddLine("nuova riga");
-                //activeDoc.AddLineBefore();
-            }
-
-
-
-            //creazione nuovo documento e salvataggio
+        private void NewDocumentAction()
+        {
+            // Creazione nuovo documento e salvataggio
             var newDoc = this._PowerEDITApp.CreatePWEDoc();
+            //var x = this._PowerEDITApp.OpenPWEDoc(@"");
             newDoc.AddLine("Prova su nuovo documento");
             newDoc.SaveDocAs(@"");
             newDoc.Activate();
+        }
 
+        private void MoveAction(IPWEDoc activeDoc)
+        {
+            // Muoversi tra le righe
+            activeDoc.MoveCursor(MoveCursorTarget.ToDocumentBegin);
+            activeDoc.MoveCursor(MoveCursorTarget.PageDown);
+            activeDoc.MoveCursor(MoveCursorTarget.PageUp);
+
+            activeDoc.SetCursorPosition(1, 1);
+            for (var i = 1; i <= activeDoc.LineCount; i++)
+            {
+                activeDoc.SetCursorPosition(i, 1);
+                var line = activeDoc.GetLine(i);
+                //...
+                activeDoc.SetSelection(line.TextRange);
+            }
+        }
+
+        private void ReplaceAction(IPWEDoc activeDoc)
+        {
+            // Find & Replace
+            if (activeDoc == null)
+            {
+                MessageBox.Show("Documento attivo non è di tipo testo");
+                return;
+            }
+
+            var profileName = this._PowerEDITApp.GetActiveProfileName();
+            if (profileName != "PWEBase")
+                return;
+
+            const string stringToReplace = "S";
+            const string replaceWith = "Raggio";
+
+            // Ricerca e sostituzione testo MODO 1 (Manuale)
+            for (var i = 1; i <= activeDoc.LineCount; i++)
+            {
+                var line = activeDoc.GetLine(i);
+                var newLine = line.Text.Replace(stringToReplace, replaceWith);
+                line.ReplaceAllText(newLine);
+            }
+
+            // Ricerca e sostituzione testo MODO 2 (API) - solo find
+            /*
+            var findResults = activeDoc.FindText(stringToReplace, SearchAction.SearchAll, SearchScope.All,
+                SearchType.Standard, SearchCasing.Any,
+                SearchWord.AnyText, string.Empty, true,
+                UiInteraction.None);
+            */
+
+            // Ricerca e sostituzione testo MODO 3 (API) - replace diretto
+            /*
+            var replaceResults = activeDoc.ReplaceText(stringToReplace, replaceWith,
+                SearchAction.SearchAll, SearchScope.All,
+                SearchType.Standard, SearchCasing.Any,
+                SearchWord.AnyText, string.Empty,
+                UiInteraction.None);
+            */
+        }
+        
+        private void AddDataAction(IPWEDoc activeDoc)
+        {
+            activeDoc.MoveCursor(MoveCursorTarget.ToDocumentEnd);
+            activeDoc.AddLine("nuova riga");
+            //activeDoc.AddLineBefore();
         }
 
         #region standard implementation
