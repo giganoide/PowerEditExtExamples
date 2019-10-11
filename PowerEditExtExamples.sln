@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "015_DocumentManagement", "015_DocumentManagement\015_DocumentManagement.csproj", "{662A85D6-5A73-49E2-BA76-5968A2231585}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "020_UseCases", "020_UseCases\020_UseCases.csproj", "{2EF236FB-F54F-4833-B174-57A20534C17B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{662A85D6-5A73-49E2-BA76-5968A2231585}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{662A85D6-5A73-49E2-BA76-5968A2231585}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{662A85D6-5A73-49E2-BA76-5968A2231585}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EF236FB-F54F-4833-B174-57A20534C17B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EF236FB-F54F-4833-B174-57A20534C17B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EF236FB-F54F-4833-B174-57A20534C17B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EF236FB-F54F-4833-B174-57A20534C17B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

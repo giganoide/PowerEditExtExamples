@@ -30,6 +30,7 @@ namespace TeamSystem.Customizations
         private const string NEWDOCUMENTBUTTONCAPTION = "New Doc";
         private const string ADDDATABUTTONCAPTION = "Add Data";
         private const string MOVEBUTTONCAPTION = "Move";
+        private const string ONLYADMINBUTTONCAPTION = "Only Admin";
 
         #endregion
 
@@ -49,6 +50,7 @@ namespace TeamSystem.Customizations
         private UIMenuBarItemInfo _NewDocumentButton = null;
         private UIMenuBarItemInfo _MoveButton = null;
         private UIMenuBarItemInfo _AddDataButton = null;
+        private UIMenuBarItemInfo _OnlyAdminButton = null;
 
         #endregion
 
@@ -104,6 +106,16 @@ namespace TeamSystem.Customizations
                 ADDDATABUTTONCAPTION, AddinMenuItemType.Button,
                 Properties.Resources.TS_LogoSmall_32);
             this.m_UIManager.AppendItemToMenuGroup(this._DocumentManagementGroup, this._AddDataButton);
+
+
+            // Add button only for admin
+            var powerDoc = this._PowerEDITApp.PowerDOCConnector;
+            if (powerDoc.GetCurrentUser().AccessLevel == PowerDOCUserAccessLevel.Administrator)
+            {
+                this._OnlyAdminButton = new UIMenuBarItemInfo((IPowerEDITExtension) this, this._DocumentManagementGroup,
+                    ONLYADMINBUTTONCAPTION, AddinMenuItemType.Button, Properties.Resources.TS_LogoSmall_32);
+                this.m_UIManager.AppendItemToMenuGroup(this._DocumentManagementGroup, this._OnlyAdminButton);
+            }
 
             this._AddinState = ExtensionState.Initialized;
         }
