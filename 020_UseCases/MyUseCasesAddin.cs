@@ -68,6 +68,7 @@ namespace TeamSystem.Customizations
             this._PowerDoc.BeforeShowingFindFormContextMenuItems += OnBeforeShowingFindFormContextMenuItems;
             this._PowerDoc.BeforeDncManualRxOperation += OnBeforeDncManualRxOperation;
             this._PowerDoc.BeforeDncTxOperation += OnBeforeDncTxOperation;
+            this._PowerDoc.DncManualRxOperationCompleted += OnDncManualRxOperationCompleted;
         }
         
         public void Shutdown()
@@ -288,6 +289,12 @@ namespace TeamSystem.Customizations
                 //Annullo la trasmissione
                 e.Cancel = true;
             }
+        }
+
+        private void OnDncManualRxOperationCompleted(object sender, PowerDOCRxOperationResultEventArgs e)
+        {
+            var fileFullPath = e.DocumentFullPath;
+            var rxFolder = e.RxFolder;
         }
 
         #endregion
