@@ -244,10 +244,20 @@ namespace TeamSystem.Customizations
 
         #region Controllo trasmissione programmi
 
+        /*
+         * TX
+         * Creazione part program
+         * Lista utensili
+         * Presetting (creazione allegato)
+         *  - Stato 2 = non è stato fatto il presetting
+         *
+         * RX
+         */
+
         private void OnBeforeDncTxOperation(object sender, PowerDOCTxOperationSetupCancelEventArgs e)
         {
             //Recupero il record corrente in base all’IdData del record
-            DataRow currentRow = this._PowerDoc.GetRecordById(e.IdData);
+            var currentRow = this._PowerDoc.GetRecordById(e.IdData);
 
             //Verifico che la condizione sia soddisfatta
             if (currentRow.Field<int>("StatoCorrente") == 2)
@@ -264,7 +274,20 @@ namespace TeamSystem.Customizations
 
         private void OnBeforeDncManualRxOperation(object sender, PowerDOCRxOperationSetupCancelEventArgs e)
         {
-            throw new NotImplementedException();
+            //Recupero il record corrente in base all’IdData del record
+            var currentRow = this._PowerDoc.GetRecordById(e.IdData);
+
+            //Verifico che la condizione sia soddisfatta
+            if (currentRow.Field<int>("Stato") == 3)
+            {
+                MessageBox.Show("Programma bloccato",
+                    "Controllo stato",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                //Annullo la trasmissione
+                e.Cancel = true;
+            }
         }
 
         #endregion
