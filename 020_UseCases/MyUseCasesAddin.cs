@@ -295,6 +295,8 @@ namespace TeamSystem.Customizations
             //Recupero il record corrente in base all’IdData del record
             var currentRow = this._PowerDoc.GetRecordById(e.IdData);
 
+            e.CloseUiAfterRxCompleted = true;
+
             //Verifico che la condizione sia soddisfatta
             if (currentRow.Field<int>("Stato") == 3)
             {

@@ -34,6 +34,7 @@
     <Reference Include="Atys.PowerEDIT.BaseLibrary, Version=2011.0.0.0, Culture=neutral, PublicKeyToken=2b95c92173e97ea3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\Atys.PowerEDIT.BaseLibrary.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
