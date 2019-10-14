@@ -244,60 +244,18 @@ namespace TeamSystem.Customizations
 
         private void OnCustomCommandsPanelRequested(object sender, PowerDOCFormReferenceEventArgs e)
         {
-            DataRow currentRow = this._PowerDoc.GetRecordById(e.IdData);
+            var currentRow = this._PowerDoc.GetRecordById(e.IdData);
 
             //Verifico che la condizione sia soddisfatta
-            string macchina = currentRow.Field<string>("Macut");
-            string percorso = currentRow.Field<string>("Percorso");
-            string codice = currentRow.Field<string>("Codice");
+            var macchina = currentRow.Field<string>("Macut");
+            var percorso = currentRow.Field<string>("Percorso");
+            var codice = currentRow.Field<string>("Codice");
             
 
-            string target = @"C:\Cnc\Backup";
-
-
-            switch (macchina.ToUpper())
-            {
-                case "FANUC":
-                    File.Copy(
-                        percorso,
-                        Path.Combine(target,"FANUC", macchina, Path.GetFileName(percorso)));
-                    break;
-                case "SIEMENS":
-                    File.Copy(
-                        percorso,
-                        Path.Combine(target,"SIEMENS", macchina, Path.GetFileName(percorso)));
-                    break;
-                case "SELCA":
-                    File.Copy(
-                        percorso,
-                        Path.Combine(target,"SLCA", macchina, Path.GetFileName(percorso)));
-                    break;
-            }
-
-
-            //La stessa cosa la si può fare recuperando il nome del profilo corrente:
-            /*
-             string profiloCorrente = this._PowerEDITApp.GetActiveProfileName();
-
-            switch (profiloCorrente.ToUpper())
-            {
-                case "FANUC":
-                    File.Copy(
-                        percorso,
-                        Path.Combine(target,"FANUC", macchina, Path.GetFileName(percorso));
-                    break;
-                case "SIEMENS":
-                    File.Copy(
-                        percorso,
-                        Path.Combine(target,"SIEMENS", macchina, Path.GetFileName(percorso));
-                    break;
-                case "SELCA":
-                    File.Copy(
-                        percorso,
-                        Path.Combine(target,"SELCA", macchina, Path.GetFileName(percorso));
-                    break;
-            }
-            */
+            const string target = @"C:\Cnc\Backup";
+            var fileName = Path.GetFileName(percorso);
+            if (fileName != null)
+                File.Copy(percorso, Path.Combine(target, macchina, fileName));
         }
 
         #endregion
