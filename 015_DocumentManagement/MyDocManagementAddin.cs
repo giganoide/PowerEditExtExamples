@@ -128,14 +128,14 @@ namespace TeamSystem.Customizations
 
             //do something...
 
-            this._PowerEDITApp.ActiveDocumentChanged += this._PowerEDITApp_ActiveDocumentChanged;
+            this._PowerEDITApp.ActiveDocumentChanged += this.OnActiveDocumentChanged;
 
-            this._PowerEDITApp.DocumentLoaded += this._PowerEDITApp_DocumentLoaded;
-            this._PowerEDITApp.DocumentCreated += this._PowerEDITApp_DocumentCreated;
-            this._PowerEDITApp.ClosingDocument += this._PowerEDITApp_ClosingDocument;
+            this._PowerEDITApp.DocumentLoaded += this.OnDocumentLoaded;
+            this._PowerEDITApp.DocumentCreated += this.OnDocumentCreated;
+            this._PowerEDITApp.ClosingDocument += this.OnClosingDocument;
         }
 
-        private void _PowerEDITApp_DocumentCreated(object sender, DocumentDataEventArgs e)
+        private void OnDocumentCreated(object sender, DocumentDataEventArgs e)
         {
             if (!e.IsPWEDoc)
                 return;
@@ -145,7 +145,7 @@ namespace TeamSystem.Customizations
             pweDoc.TextChanging += this.PweDoc_TextChanging;
         }
 
-        private void _PowerEDITApp_DocumentLoaded(object sender, DocumentDataEventArgs e)
+        private void OnDocumentLoaded(object sender, DocumentDataEventArgs e)
         {
             if (!e.IsPWEDoc)
                 return;
@@ -155,7 +155,7 @@ namespace TeamSystem.Customizations
             pweDoc.TextChanging += this.PweDoc_TextChanging;
         }
 
-        private void _PowerEDITApp_ClosingDocument(object sender, DocumentDataEventArgs e)
+        private void OnClosingDocument(object sender, DocumentDataEventArgs e)
         {
             if (!e.IsPWEDoc)
                 return;
@@ -179,7 +179,7 @@ namespace TeamSystem.Customizations
             }
         }
 
-        private void _PowerEDITApp_ActiveDocumentChanged(object sender, ActiveDocumentChangedEventArgs e)
+        private void OnActiveDocumentChanged(object sender, ActiveDocumentChangedEventArgs e)
         {
             if (e.PreviousDoc is IPWEDoc previousPweDoc)
                 previousPweDoc.TextChanging -= this.PweDoc_TextChanging;

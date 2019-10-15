@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Atys.PowerEDIT;
@@ -70,8 +71,9 @@ namespace TeamSystem.Customizations
             this._PowerDoc.BeforeDncTxOperation += OnBeforeDncTxOperation;
             this._PowerDoc.DncManualRxOperationCompleted += OnDncManualRxOperationCompleted;
             this._PowerDoc.CustomCommandsPanelRequested += OnCustomCommandsPanelRequested;
+            this._PowerDoc.CustomCommandsPanelRequested2 += OnCustomCommandsPanelRequested2;
         }
-        
+
         public void Shutdown()
         {
             Debug.Assert(this.m_UIManager != null);
@@ -269,7 +271,6 @@ namespace TeamSystem.Customizations
          * Presetting (creazione allegato)
          *  - Stato 2 = non è stato fatto il presetting
          *
-         * RX
          */
 
         private void OnBeforeDncTxOperation(object sender, PowerDOCTxOperationSetupCancelEventArgs e)
@@ -315,6 +316,46 @@ namespace TeamSystem.Customizations
             var fileFullPath = e.DocumentFullPath;
             var rxFolder = e.RxFolder;
         }
+
+        #endregion
+
+        #region Lista utensili
+
+        private void OnCustomCommandsPanelRequested2(object sender, PowerDOCFormReferenceEventArgs e)
+        {
+            var currentRow = _PowerDoc.GetRecordById(e.IdData);
+            var percorso = currentRow.Field<string>("percorso");
+            var machine = currentRow.Field<string>("macut");
+
+            ToolList(percorso, machine);
+        }
+
+        private void ToolList(string percorso, string machine)
+        {
+            const string TOOLPATTERN = @"T(?<toolNum>[\d]+)\x20?\((?<comment>(.*))\)";
+            var tools = new List<Tuple<string, string>>();
+
+            using (var reader = new StreamReader(percorso))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    var match = Regex.Match(line, TOOLPATTERN);
+
+                    if (match.Success)
+                        tools.Add(new Tuple<string, string>(match.Groups["toolNum"].Value, match.Groups["comment"].Value));
+                }
+            }
+
+            if (tools.Count == 0)
+                return;
+            var doc = this._PowerEDITApp.CreatePWEDoc();
+            doc.AddLine(string.Format("LISTA UTENSILE SU MACCHINA {0}", machine));
+            doc.AddLine();
+            foreach (var tool in tools)
+                doc.AddLine(string.Format("UT = {0}    COM = {1}", tool.Item1, tool.Item2));
+        }
+
 
         #endregion
     }
