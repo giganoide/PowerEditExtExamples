@@ -145,6 +145,11 @@ namespace TeamSystem.Customizations
         {
             Debug.Assert(menuItem != null);
 
+            if (menuItem == this._MyCommandButton2)
+            {
+                menuItem.Caption = "Nuova caption";
+            }
+
             if (menuItem.Caption == MYCOMMAND1BUTTONCAPTION)
             {
                 //reazione a pressione pulsante 1
